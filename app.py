@@ -6,6 +6,7 @@ import random
 import sys
 import os 
 import json
+import csv
 
 from wit import Wit
 access_token = "GGDBZAV5X6J5CJBCKOOLWWWMMMMSHTHR"
@@ -16,6 +17,12 @@ app = Flask(__name__) ## This is how we create an instance of the Flask class fo
 ACCESS_TOKEN = 'EAAKMgA79MiwBAJpvCa0fOiEhkuHux94c7dwgzOZCvGR8f0pxoZB5csi3o6rPkZAd30MRGmogLHMuF409B954pDl3EgITLzn0qmn5TLlSUEOobdvUZBT1ZCJT2BvYzlYGhrJLQRi6xUd0ZCjyRC75uhhk1lcH1WZCmvy7ZC2TQOhx3dyJyA8yGlme'   #ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
 VERIFY_TOKEN = 'TESTINGTOKEN' ## Replace 'VERIFY_TOKEN' with your verify token
 bot = Bot(ACCESS_TOKEN) ## Create an instance of the bot
+
+HELP_MESSAGE = "I can provide information about dining options, allergies, and schedules here at Rice!"
+EXAMPLES = ["what can I eat at West?", "where can I find vegetarian food?", "which serveries are open today?"]
+
+def help_statement():
+    return HELP_MESSAGE + " Ask me a question like \"" + random.choice(EXAMPLES) + "\""
 
 def verify_fb_token(token_sent):
     ## Verifies that the token sent by Facebook matches the token sent locally
@@ -38,36 +45,47 @@ def get_response_text(message):
 
         nlp_entities = nlp_response['entities']
 
-        if ('eating' in nlp_entities):
-            response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about eating\n"
+        EATERIES = ["west", "north", "south", "seibel", "sid", "baker"]
 
-        if ('serveries' in nlp_entities):
-            response_message += "I am " + str(round(nlp_entities['serveries'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about serveries\n"
+        if ('eating' in nlp_entities):
+            #response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
+            #                    "% confident you are talking about eating\n"
+            
+            # If the user provided no information other than indication that they are talking about eating
+            if len(nlp_entities) == 1:
+                response_message = "It seems like you're interested in eating. " + help_statement()
+
+        if ('serveries' in nlp_entities and nlp_entities['serveries'][0]['confidence'] > .7):
+            #response_message += "I am " + str(round(nlp_entities['serveries'][0]['confidence'] * 100)) + \
+            #                    "% confident you are talking about serveries\n"
+
+            entity = nlp_entities['serveries'][0]
+            servery = entity['value']
+            if servery is 
+            is_open()
 
         if ('mealtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about meals\n"
+                                "% confident you are talking about meals\n"
 
         if ('schedule' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['schedule'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about schedules\n"
+                                "% confident you are talking about schedules\n"
 
         if ('datetime' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['datetime'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about dates and times\n"
+                                "% confident you are talking about dates and times\n"
 
         if ('foodtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['foodtype'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about foods\n"
+                                "% confident you are talking about foods\n"
 
         if ('dietary' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['dietary'][0]['confidence'] * 100)) + \
-                                "%% confident you are talking about dietary restrictions\n"
+                                "% confident you are talking about dietary restrictions\n"
 
     if not response_message:
-        response_message = "No Wit entities detected."
+        response_message = "I don't understand that statement. " + help_statement()
 
     return response_message
     """
@@ -79,6 +97,20 @@ def get_response_text(message):
     else:
         return "Hack on!"
     """
+
+"""
+with open('employee_birthday.txt') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    line_count = 0
+    for row in csv_reader:
+        if line_count == 0:
+            print(f'Column names are {", ".join(row)}')
+            line_count += 1
+        else:
+            print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
+            line_count += 1
+    print(f'Processed {line_count} lines.')
+"""
 
 # Checks whether the first entitiy is 'name' or not
 def firstEntity(nlp):
