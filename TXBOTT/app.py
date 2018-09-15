@@ -1,7 +1,7 @@
 #Python libraries that we need to import for our bot
+from __future__ import print_function
 from flask import Flask, request
 from pymessenger.bot import Bot
-from __future__ import print_function
 import random
 import sys
 import os 
@@ -20,8 +20,8 @@ def verify_fb_token(token_sent):
 
 # Chooses a message to send to the user
 def get_message_text(input_text):
-    greeting = firstEntity(message.nlp, 'greetings');
-    if (greeting && greeting.confidence > 0.8):
+    greeting = firstEntity(message['nlp'], 'greetings');
+    if (greeting and greeting['confidence'] > 0.8):
         return "Hi! This is identified as a greeting by built in NLP"
     else:
         return "Hack on!"
