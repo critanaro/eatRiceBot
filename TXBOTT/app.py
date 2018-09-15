@@ -40,31 +40,31 @@ def get_response_text(message):
 
         if ('eating' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about eating\n"
+                                "%% confident you are talking about eating\n"
 
         if ('serveries' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['serveries'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about serveries\n"
+                                "%% confident you are talking about serveries\n"
 
         if ('mealtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about meals\n"
+                                "%% confident you are talking about meals\n"
 
         if ('schedule' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['schedule'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about schedules\n"
+                                "%% confident you are talking about schedules\n"
 
         if ('datetime' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['datetime'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about dates and times\n"
+                                "%% confident you are talking about dates and times\n"
 
         if ('foodtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['foodtype'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about foods\n"
+                                "%% confident you are talking about foods\n"
 
         if ('dietary' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['dietary'][0]['confidence'] * 100)) + \
-                                "\% confident you are talking about dietary restrictions\n"
+                                "%% confident you are talking about dietary restrictions\n"
 
     if not response_message:
         response_message = "No Wit entities detected."
