@@ -7,6 +7,10 @@ import sys
 import os 
 import json
 
+from wit import Wit
+access_token = "GGDBZAV5X6J5CJBCKOOLWWWMMMMSHTHR"
+wit_client = Wit(access_token)
+
 app = Flask(__name__) ## This is how we create an instance of the Flask class for our app
 
 ACCESS_TOKEN = 'EAAKMgA79MiwBAJpvCa0fOiEhkuHux94c7dwgzOZCvGR8f0pxoZB5csi3o6rPkZAd30MRGmogLHMuF409B954pDl3EgITLzn0qmn5TLlSUEOobdvUZBT1ZCJT2BvYzlYGhrJLQRi6xUd0ZCjyRC75uhhk1lcH1WZCmvy7ZC2TQOhx3dyJyA8yGlme'   #ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
@@ -20,7 +24,32 @@ def verify_fb_token(token_sent):
     return 'Invalid verification token'
 
 # Chooses a message to send to the user
-def get_message_text(message):
+def get_response_text(message):
+    message_text = message['text']
+
+    nlp_response = wit_client.message(message_text)
+    if ('entities' in message_text):
+        nlp_entities = nlp_response['entities']
+
+        if ('eating' in nlp_entities):
+            pass
+
+        if ('serveries' in nlp_entities):
+            pass
+
+        if ('mealtype' in nlp_entities):
+            pass
+
+        if ('schedule' in nlp_entities):
+            pass
+
+        if ('datetime' in nlp_entities):
+            pass
+
+        if ('foodtype' in nlp_entities):
+            pass
+
+    """
     entity1 = firstEntity(message['nlp'])
     if (entity1 and 'greeting' in entity1):
         return "Hi! This is identified as a greeting by built in NLP"
@@ -28,6 +57,7 @@ def get_message_text(message):
         return "This is a sentiment, as defined by NLP"
     else:
         return "Hack on!"
+    """
 
 # Checks whether the first entitiy is 'name' or not
 def firstEntity(nlp):
@@ -61,8 +91,8 @@ def receive_message():
                 if message.get('message'):
                     recipient_id = message['sender']['id'] ## Facebook Messenger ID for user so we know where to send response back to
 
-                    response_sent_text = get_message_text(message['message'])
-                    send_message(recipient_id, response_sent_text)
+                    response_text = get_response_text(message['message'])
+                    send_message(recipient_id, response_text)
 
         return "Message Processed"
 
