@@ -7,6 +7,10 @@ import sys
 import os 
 import json
 
+from wit import Wit
+access_token = "GGDBZAV5X6J5CJBCKOOLWWWMMMMSHTHR"
+wit_client = Wit(access_token)
+
 app = Flask(__name__) ## This is how we create an instance of the Flask class for our app
 
 ACCESS_TOKEN = 'EAAKMgA79MiwBAJpvCa0fOiEhkuHux94c7dwgzOZCvGR8f0pxoZB5csi3o6rPkZAd30MRGmogLHMuF409B954pDl3EgITLzn0qmn5TLlSUEOobdvUZBT1ZCJT2BvYzlYGhrJLQRi6xUd0ZCjyRC75uhhk1lcH1WZCmvy7ZC2TQOhx3dyJyA8yGlme'   #ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
@@ -20,7 +24,53 @@ def verify_fb_token(token_sent):
     return 'Invalid verification token'
 
 # Chooses a message to send to the user
-def get_message_text(message):
+def get_response_text(message):
+    message_text = message['text']
+
+    response_message = ""
+
+    nlp_response = wit_client.message(message_text)
+
+    with open('nlp_response_wit.txt', 'w') as file:
+        file.write(json.dumps(nlp_response))
+
+    if ('entities' in nlp_response):
+
+        nlp_entities = nlp_response['entities']
+
+        if ('eating' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about eating\n"
+
+        if ('serveries' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['serveries'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about serveries\n"
+
+        if ('mealtype' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about meals\n"
+
+        if ('schedule' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['schedule'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about schedules\n"
+
+        if ('datetime' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['datetime'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about dates and times\n"
+
+        if ('foodtype' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['foodtype'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about foods\n"
+
+        if ('dietary' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['dietary'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about dietary restrictions\n"
+
+    if not response_message:
+        response_message = "No Wit entities detected."
+
+    return response_message
+    """
     entity1 = firstEntity(message['nlp'])
     if (entity1 and 'greeting' in entity1):
         return "Hi! This is identified as a greeting by built in NLP"
@@ -28,6 +78,7 @@ def get_message_text(message):
         return "This is a sentiment, as defined by NLP"
     else:
         return "Hack on!"
+    """
 
 # Checks whether the first entitiy is 'name' or not
 def firstEntity(nlp):
@@ -52,7 +103,7 @@ def receive_message():
     ## Handle POST requests
     else: 
         output = request.get_json() ## get whatever message a user sent the bot
-        with open('data_hackrice.txt', 'w') as outfile:
+        with open('json_in_message.txt', 'w') as outfile:
             json.dump(output, outfile)
 
         for event in output['entry']:
@@ -61,8 +112,8 @@ def receive_message():
                 if message.get('message'):
                     recipient_id = message['sender']['id'] ## Facebook Messenger ID for user so we know where to send response back to
 
-                    response_sent_text = get_message_text(message['message'])
-                    send_message(recipient_id, response_sent_text)
+                    response_text = get_response_text(message['message'])
+                    send_message(recipient_id, response_text)
 
         return "Message Processed"
 
