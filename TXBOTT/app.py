@@ -5,6 +5,7 @@ from pymessenger.bot import Bot
 import random
 import sys
 import os 
+import json
 
 app = Flask(__name__) ## This is how we create an instance of the Flask class for our app
 
@@ -19,16 +20,21 @@ def verify_fb_token(token_sent):
     return 'Invalid verification token'
 
 # Chooses a message to send to the user
-def get_message_text(input_text):
-    greeting = firstEntity(message['nlp'], 'greetings');
-    if (greeting and greeting['confidence'] > 0.8):
+def get_message_text(message):
+    entity1 = firstEntity(message['nlp'])
+    if (entity1 and 'greeting' in entity1):
         return "Hi! This is identified as a greeting by built in NLP"
+    elif (entity1 and 'sentiment' in entity1):
+        return "This is a sentiment, as defined by NLP"
     else:
         return "Hack on!"
 
-# Checks whether the first entitiy is name or not
-def firstEntity(nlp, name):
-    return nlp and nlp['entities'] and nlp['entities']['name'] and nlp['entities']['name'][0]
+# Checks whether the first entitiy is 'name' or not
+def firstEntity(nlp):
+    if nlp and 'entities' in nlp:
+        return nlp['entities']
+    else:
+        return False
 
 ## Send text message to recipient
 def send_message(recipient_id, response):
@@ -38,7 +44,6 @@ def send_message(recipient_id, response):
 ## This endpoint will receive messages 
 @app.route("/", methods=['GET', 'POST'])
 def receive_message():
-
     ## Handle GET requests
     if request.method == 'GET':
         token_sent = request.args.get("hub.verify_token") ## Facebook requires a verify token when receiving messages
@@ -46,18 +51,20 @@ def receive_message():
 
     ## Handle POST requests
     else: 
-       output = request.get_json() ## get whatever message a user sent the bot
-       for event in output['entry']:
-          messaging = event['messaging']
-          for message in messaging:
-            if message.get('message'):
-                recipient_id = message['sender']['id'] ## Facebook Messenger ID for user so we know where to send response back to
+        output = request.get_json() ## get whatever message a user sent the bot
+        with open('data_hackrice.txt', 'w') as outfile:
+            json.dump(output, outfile)
 
-                test_message = message['message'].get('text')
-                response_sent_text = get_message_text(test_message)
-                send_message(recipient_id, response_sent_text)
+        for event in output['entry']:
+            messaging = event['messaging']
+            for message in messaging:
+                if message.get('message'):
+                    recipient_id = message['sender']['id'] ## Facebook Messenger ID for user so we know where to send response back to
 
-    return "Message Processed"
+                    response_sent_text = get_message_text(message['message'])
+                    send_message(recipient_id, response_sent_text)
+
+        return "Message Processed"
 
 ## Ensures that the below code is only evaluated when the file is executed, and ignored if the file is imported
 if __name__ == "__main__": 
