@@ -55,10 +55,23 @@ def menu_options(servery, dining_data):
     options = []
     for row in dining_data:
         if row[0].lower() == servery:
-            for meal in row[2:]:
-                options.append(meal.strip('\"'))
+            if row[2]:
+                options.append(row[2].strip('\"'))
 
     return options
+
+def print_menu(servery, dining_data):
+    menu = menu_options(servery, dining_data)
+    menu_text = ""
+    if len(menu) > 0:
+        menu_text += servery.capitalize() + " is serving "
+        for m in range(len(menu)):
+            menu_text += menu[m]
+            if m < len(menu) - 2:
+                menu_text += ", "
+            elif m == len(menu) - 2:
+                menu_text += " and "
+    return menu_text
 
 # Chooses a message to send to the user
 def get_response_text(message):
@@ -115,26 +128,40 @@ def get_response_text(message):
                 servery = "sammy's"
             elif servery == "sid richardson":
                 servery = "sid"
+            elif servery == "duncan":
+                servery = "west"
+            elif servery == "mcmurtry":
+                servery = "west"
+            elif servery == "martel":
+                servery = "north"
+            elif servery == "jones":
+                servery = "north"
+            elif servery == "brown":
+                servery = "north"
+            elif servery == "will rice":
+                servery = "seibel"
+            elif servery == "lovett":
+                servery = "seibel"
+            elif servery == "hanszen":
+                servery = "south"
+            elif servery == "weiss":
+                servery = "south"
 
             if servery in EATERIES:
-
                 if is_open(servery, dining_data):
-                    menu = menu_options(servery, dining_data)
-                    if len(menu) > 0:
-                        response_message += servery.capitalize() + " is serving "
-                        for m in range(len(menu)):
-                            response_message += menu[m]
-                            if m < len(menu) - 1:
-                                response_message += ", "
-                            else:
-                                response_message += " "
-                        response_message += " today."
+                    menu_text = print_menu(servery, dining_data)
+                    if menu_text:
+                        response_message += menu_text + " today."
                     else:
                         response_message += "We don't know the menu for " + servery.capitalize() + " right now.\n"
 
+                # If the servery is closed
                 else:
-                    if (schedule):
-                        response_message += "I'm sorry, " + servery.capitalize() + " is closed today.\n"
+                    response_message += servery.capitalize() + " is closed today.\n"
+
+            # If the eatery is unrecognized
+            else:
+                response_message += "It seems like you're interested in serveries. " + help_statement() + "\n"
 
         if ('mealtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
