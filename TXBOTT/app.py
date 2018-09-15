@@ -27,28 +27,49 @@ def verify_fb_token(token_sent):
 def get_response_text(message):
     message_text = message['text']
 
+    response_message = ""
+
     nlp_response = wit_client.message(message_text)
-    if ('entities' in message_text):
+
+    with open('nlp_response_wit.txt', 'w') as file:
+        file.write(json.dumps(nlp_response))
+
+    if ('entities' in nlp_response):
+
         nlp_entities = nlp_response['entities']
 
         if ('eating' in nlp_entities):
-            pass
+            response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about eating\n"
 
         if ('serveries' in nlp_entities):
-            pass
+            response_message += "I am " + str(round(nlp_entities['serveries'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about serveries\n"
 
         if ('mealtype' in nlp_entities):
-            pass
+            response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about meals\n"
 
         if ('schedule' in nlp_entities):
-            pass
+            response_message += "I am " + str(round(nlp_entities['schedule'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about schedules\n"
 
         if ('datetime' in nlp_entities):
-            pass
+            response_message += "I am " + str(round(nlp_entities['datetime'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about dates and times\n"
 
         if ('foodtype' in nlp_entities):
-            pass
+            response_message += "I am " + str(round(nlp_entities['foodtype'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about foods\n"
 
+        if ('dietary' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['dietary'][0]['confidence'] * 100)) + \
+                                "\% confident you are talking about dietary restrictions\n"
+
+    if not response_message:
+        response_message = "No Wit entities detected."
+
+    return response_message
     """
     entity1 = firstEntity(message['nlp'])
     if (entity1 and 'greeting' in entity1):
@@ -82,7 +103,7 @@ def receive_message():
     ## Handle POST requests
     else: 
         output = request.get_json() ## get whatever message a user sent the bot
-        with open('data_hackrice.txt', 'w') as outfile:
+        with open('json_in_message.txt', 'w') as outfile:
             json.dump(output, outfile)
 
         for event in output['entry']:
