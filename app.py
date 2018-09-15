@@ -73,6 +73,43 @@ def print_menu(servery, dining_data):
                 menu_text += " and "
     return menu_text
 
+def servery_food_find(food, dining_data):
+    serveries = []
+    for row in dining_data:
+        servery = row[0].lower()
+        if ((food in row[3].lower().split()) or (food in row[2].lower().split())) and servery not in serveries:
+            serveries.append(servery)
+    return serveries
+
+def single_servery_food_find(food, servery, dining_data):
+    meals = []
+    for row in dining_data:
+        serv = row[0].lower()
+        if servery == serv:
+            if food in row[2].lower().split() or food in row[3].lower().split():
+                meals.append(row[2])
+
+    return meals
+
+def servery_food_exclude(food, dining_data):
+    serveries = []
+    for row in dining_data:
+        servery = row[0].lower()
+        if (food not in row[3].lower().split()) and (food not in row[2].lower().split()) and servery not in serveries:
+            serveries.append(servery)
+
+    return serveries
+
+def single_servery_food_exclude(food, servery, dining_data):
+    meals = []
+    for row in dining_data:
+        serv = row[0].lower()
+        if servery == serv:
+            if food not in row[2].lower().split() and food not in row[3].lower().split():
+                meals.append(row[2])
+
+    return meals
+
 # Chooses a message to send to the user
 def get_response_text(message):
     message_text = message['text']
@@ -94,11 +131,19 @@ def get_response_text(message):
 
         servery = ""
 
+        eating = False
+
+        foodtype_input = ""
+
+        mealtype_input = ""
+
+        dietary_input = ""
+
         time_inquiry = ""
 
         schedule = ""
 
-        if ('eating' in nlp_entities):
+        if ('eating' in nlp_entities and nlp_entities['eating'][0]['confidence'] > .7):
             #response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
             #                    "% confident you are talking about eating\n"
             
@@ -151,7 +196,7 @@ def get_response_text(message):
                 if is_open(servery, dining_data):
                     menu_text = print_menu(servery, dining_data)
                     if menu_text:
-                        response_message += menu_text + " today."
+                        response_message += menu_text + " today.\n"
                     else:
                         response_message += "We don't know the menu for " + servery.capitalize() + " right now.\n"
 
@@ -160,7 +205,7 @@ def get_response_text(message):
                     response_message += servery.capitalize() + " is closed today.\n"
 
             # If the eatery is unrecognized
-            else:
+            elif len(nlp_entities) == 1 or (len(nlp_entities) == 2 and "eating" in nlp_entities):
                 response_message += "It seems like you're interested in serveries. " + help_statement() + "\n"
 
         if ('mealtype' in nlp_entities):
@@ -171,9 +216,73 @@ def get_response_text(message):
             response_message += "I am " + str(round(nlp_entities['foodtype'][0]['confidence'] * 100)) + \
                                 "% confident you are talking about foods\n"
 
-        if ('dietary' in nlp_entities):
+        if ('dietary' in nlp_entities and nlp_entities['dietary'][0]['confidence'] > .8):
+            """
             response_message += "I am " + str(round(nlp_entities['dietary'][0]['confidence'] * 100)) + \
                                 "% confident you are talking about dietary restrictions\n"
+            """
+            entity = nlp_entities['dietary'][0]
+            diet = entity['value'].lower().strip()
+            if response_message: response_message += "\n"
+
+            # Determine whether we should look for foods or exclude foods
+            inclusion = False
+            if diet == "vegetarian" or diet == "vegan":
+                inclusion = True
+
+            if not servery:
+                # If no specific servery has been specified, look in them all
+                found_serveries = []
+                if inclusion:
+                    found_serveries = servery_food_find(diet, dining_data)
+                else:
+                    found_serveries = servery_food_exclude(diet, dining_data)
+
+                for serv in range(len(found_serveries)):
+                    response_message += found_serveries[serv].capitalize()
+                    if serv < len(found_serveries) - 2:
+                        response_message += ", "
+                    elif serv == len(found_serveries) - 2:
+                        response_message += " and "
+
+                if len(found_serveries) > 1:
+                    response_message += " have "
+                else:
+                    response_message += " has "
+
+                response_message += diet
+
+                if not inclusion:
+                    response_message += " free"
+
+                response_message += " options today.\n"
+
+            else:
+                if is_open(servery, dining_data):
+                    found_meals = []
+                    if inclusion:
+                        found_meals = single_servery_food_find(diet, servery, dining_data)
+                    else:
+                        found_meals = single_servery_food_exclude(diet, servery, dining_data)
+
+                    num_meals = len(found_meals)
+                    if num_meals > 0:
+                        response_message += servery.capitalize() + " is serving "
+                        for m in range(num_meals):
+                            response_message += found_meals[m]
+                            if m < num_meals - 2:
+                                response_message += ", "
+                            elif m == num_meals - 2:
+                                response_message += " and "
+
+                        response_message += " today.\n"
+
+                    else: # The servery has no options of this diet
+                        response_message += servery.capitalize() + " is not serving any " + diet
+                        if not inclusion:
+                            response_message += " free"
+                        response_message += " food today.\n"
+
 
     if not response_message:
         response_message = "I don't understand that statement. " + help_statement()
