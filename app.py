@@ -20,6 +20,7 @@ bot = Bot(ACCESS_TOKEN) ## Create an instance of the bot
 
 HELP_MESSAGE = "I can provide information about dining options, allergies, and schedules here at Rice!"
 EXAMPLES = ["what can I eat at West?", "where can I find vegetarian food?", "which serveries are open today?"]
+dining_data_file = "./data/diningData-2018-09-15T19-54-14Z.csv" # TODO: generate based on date
 
 def help_statement():
     return HELP_MESSAGE + " Ask me a question like \"" + random.choice(EXAMPLES) + "\""
@@ -29,6 +30,35 @@ def verify_fb_token(token_sent):
     if token_sent == VERIFY_TOKEN:
         return request.args.get("hub.challenge")
     return 'Invalid verification token'
+
+def dining_reader(dining_data_file):
+    dining_data = []
+    with open(dining_data_file) as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for row in csv_reader:
+            dining_data.append(row)
+
+        return dining_data
+    return []
+
+def is_open(servery, dining_data):
+    for row in dining_data:
+        if row[0].lower() == servery:
+            if row[1] == "true":
+                words = row[2].split()
+                if words[1].lower() != "available":
+                    return True
+
+    return False
+
+def menu_options(servery, dining_data):
+    options = []
+    for row in dining_data:
+        if row[0].lower() == servery:
+            for meal in row[2:]:
+                options.append(meal.strip('\"'))
+
+    return options
 
 # Chooses a message to send to the user
 def get_response_text(message):
@@ -45,7 +75,15 @@ def get_response_text(message):
 
         nlp_entities = nlp_response['entities']
 
-        EATERIES = ["west", "north", "south", "seibel", "sid", "baker"]
+        EATERIES = ["west", "north", "south", "seibel", "sid", "baker", "sammy's"]
+
+        dining_data = dining_reader(dining_data_file)
+
+        servery = ""
+
+        time_inquiry = ""
+
+        schedule = ""
 
         if ('eating' in nlp_entities):
             #response_message += "I am " + str(round(nlp_entities['eating'][0]['confidence'] * 100)) + \
@@ -55,26 +93,52 @@ def get_response_text(message):
             if len(nlp_entities) == 1:
                 response_message = "It seems like you're interested in eating. " + help_statement()
 
+        if ('schedule' in nlp_entities and nlp_entities['schedule'][0]['confidence'] > .7):
+            """
+            response_message += "I am " + str(round(nlp_entities['schedule'][0]['confidence'] * 100)) + \
+                                "% confident you are talking about schedules\n"
+            """
+            schedule = nlp_entities['schedule'][0]['value']
+
+        if ('datetime' in nlp_entities):
+            response_message += "I am " + str(round(nlp_entities['datetime'][0]['confidence'] * 100)) + \
+                                "% confident you are talking about dates and times\n"
+
         if ('serveries' in nlp_entities and nlp_entities['serveries'][0]['confidence'] > .7):
             #response_message += "I am " + str(round(nlp_entities['serveries'][0]['confidence'] * 100)) + \
             #                    "% confident you are talking about serveries\n"
 
             entity = nlp_entities['serveries'][0]
-            servery = entity['value']
-            if servery is 
-            is_open()
+            servery = entity['value'].lower().strip()
+
+            if servery == "sammys":
+                servery = "sammy's"
+            elif servery == "sid richardson":
+                servery = "sid"
+
+            if servery in EATERIES:
+
+                if is_open(servery, dining_data):
+                    menu = menu_options(servery, dining_data)
+                    if len(menu) > 0:
+                        response_message += servery.capitalize() + " is serving "
+                        for m in range(len(menu)):
+                            response_message += menu[m]
+                            if m < len(menu) - 1:
+                                response_message += ", "
+                            else:
+                                response_message += " "
+                        response_message += " today."
+                    else:
+                        response_message += "We don't know the menu for " + servery.capitalize() + " right now.\n"
+
+                else:
+                    if (schedule):
+                        response_message += "I'm sorry, " + servery.capitalize() + " is closed today.\n"
 
         if ('mealtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
                                 "% confident you are talking about meals\n"
-
-        if ('schedule' in nlp_entities):
-            response_message += "I am " + str(round(nlp_entities['schedule'][0]['confidence'] * 100)) + \
-                                "% confident you are talking about schedules\n"
-
-        if ('datetime' in nlp_entities):
-            response_message += "I am " + str(round(nlp_entities['datetime'][0]['confidence'] * 100)) + \
-                                "% confident you are talking about dates and times\n"
 
         if ('foodtype' in nlp_entities):
             response_message += "I am " + str(round(nlp_entities['foodtype'][0]['confidence'] * 100)) + \
