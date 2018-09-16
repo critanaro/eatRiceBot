@@ -10,6 +10,7 @@ Some sample questions include:
 -* gluten-free options at South or Sid?
 -* What's on the menu at North and West?
 
+Eat Rice Bot uses information from the Rice servery websites and NLP to answer nuanced questions about meals, eateries, and dietary restrictions. Try it!
 ## Demo
 
 ```
