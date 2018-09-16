@@ -187,7 +187,7 @@ def get_response_text(message):
             """
             entity = nlp_entities['datetime']
             for t in entity:
-                if t['confidence'] > CONFIDENCE_THRESH:
+                if 'confidence' in t and t['confidence'] > CONFIDENCE_THRESH and 'value' in t:
                     time_input.append(t['value'])
 
         if ('serveries' in nlp_entities):
