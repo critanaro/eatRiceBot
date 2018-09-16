@@ -19,5 +19,3 @@ CSV.open('./data/'+filename, 'w') do |csv|
     end
   end
 end
-
-return 'diningData-'+ timestamp +'.csv'
