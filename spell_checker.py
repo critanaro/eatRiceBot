@@ -38,6 +38,7 @@ def edits2(word):
     return (e2 for e1 in edits1(word) for e2 in edits1(e1))
 
 def correct_sentence(sentence):
+    return sentence
     # USE THIS
     # does a sentence with corrected letters, if the words have non alphanumeric characters, then it removes them
     new_sent = ""
@@ -46,4 +47,7 @@ def correct_sentence(sentence):
         if any((c in chars) for c in word):
             word = re.sub(r'[^\w]',' ', word)
         new_sent += correction(word) + " "
-    return new_sent
+    if new_sent == sentence + "s":
+        return sentence
+    else:
+        return new_sent

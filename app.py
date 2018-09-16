@@ -26,7 +26,7 @@ HELP_MESSAGE = "I can provide information about dining options, allergies, and s
 EXAMPLES = ["gluten-free", "is there vegetarian at West or Seibel?", "are eggs served at North today?", "vegan at South?", "west"]
 
 EATERIES = ["west", "north", "south", "seibel", "sid", "baker", "sammy's"]
-CONFIDENCE_THRESH = .7
+CONFIDENCE_THRESH = .575
 #MEALTIMES = {"breakfast" : }
 
 def help_statement():
