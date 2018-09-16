@@ -44,11 +44,11 @@ serveryByDay =	{
 
 serveryByTime = {
 	"baker" : [[(), (), (), ()], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(), (), (), ()]],
-	"north" : [[(), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (), (hmsToMs ("17:00:00"), hmsToMs ("19:00:00"))], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(hmsToMs ("09:00:00"), hmsToMs ("11:00:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("2:00:00")), (hmsToMs ("16:45:00"), hmsToMs ("18:15:00"))]],
+	"north" : [[(), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (), (hmsToMs ("17:00:00"), hmsToMs ("19:00:00"))], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(hmsToMs ("09:00:00"), hmsToMs ("11:00:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (hmsToMs ("16:45:00"), hmsToMs ("18:15:00"))]],
 	"sidrich" : [[(), (), (), ()], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(), (), (), ()]],
 	"south" : [[(), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (), (hmsToMs ("17:00:00"), hmsToMs ("19:00:00"))], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(), (), (), ()]],
 	"west" : [[(), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (), (hmsToMs ("17:00:00"), hmsToMs ("19:00:00"))], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(), (), (), ()]],
-	"seibel" : [[(), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (), (hmsToMs ("17:00:00"), hmsToMs ("19:00:00"))], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(hmsToMs ("09:00:00"), hmsToMs ("11:00:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("2:00:00")), (hmsToMs ("16:45:00"), hmsToMs ("18:15:00"))]],
+	"seibel" : [[(), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (), (hmsToMs ("17:00:00"), hmsToMs ("19:00:00"))], [(hmsToMs ("07:30:00"), hmsToMs ("09:30:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("13:30:00")), (hmsToMs ("17:30:00"), hmsToMs ("19:30:00"))], [(hmsToMs ("09:00:00"), hmsToMs ("11:00:00")), (), (hmsToMs ("11:30:00"), hmsToMs ("14:00:00")), (hmsToMs ("16:45:00"), hmsToMs ("18:15:00"))]],
 	
 }
 
@@ -71,7 +71,7 @@ def filterByTime (time):
 	current_time = timeFormat(time)[0]
 	current_day = timeFormat(time)[1]
 
-	available_severy = {}
+	available_severy = set()
 	open_today = filterByDay(time)
 	for serveries_of_meal in open_today:
 		for servery in serveries_of_meal:
@@ -82,13 +82,19 @@ def filterByTime (time):
 def CheckOneServery (time, serveryName):
 	#input a string for servery name, return a boolean
 	current_time = timeFormat(time)[0]
-	current_day = timeFormat(time)[1]
-	current_servery_time = serveryByTime[serveryName]
-	# print "current table: ", current_servery_time
-	# print "current time: ", 
+	current_day = timeFormat(time)[1] 
+	if (1 <= current_day and current_day <= 5):
+		#work day
+		current_servery_time = serveryByTime[serveryName][1]
+	elif (current_day == 6):
+		#Saturday
+		current_servery_time = serveryByTime[serveryName][2]
+	else :
+		#Sunday
+		current_servery_time = serveryByTime[serveryName][0] 
 	availability = False
 	for meal in current_servery_time:
-		if(current_time >= meal[0] and current_time <= meal[1]):
+		if(meal and current_time >= meal[0] and current_time <= meal[1]):
 			availability = True
 	return availability
 
@@ -96,15 +102,10 @@ def CheckOneServery (time, serveryName):
 def filterByMeal (time, mealName):
 	#input a string fro meal name, breakfast, lunch, dinner, brunch, return a dictionary of servery as key and time range tuple as value
 	current_day = timeFormat(time)[1]
-	mealNum = mealToNum(mealName)
+	mealNum = mealToNum[mealName]
 	open_today = filterByDay(time)
 
-	available_severy = []
-	for servery in open_today:
-		if(serveryByTime[servery][mealNum]):
-			available_severy.add(servery)
-	return available_severy
-
+	return open_today[mealNum]
 
 
 
