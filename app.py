@@ -19,7 +19,7 @@ VERIFY_TOKEN = 'TESTINGTOKEN' ## Replace 'VERIFY_TOKEN' with your verify token
 bot = Bot(ACCESS_TOKEN) ## Create an instance of the bot
 
 HELP_MESSAGE = "I can provide information about dining options, allergies, and schedules here at Rice!"
-EXAMPLES = ["gluten-free", "is there vegetarian at West or Seibel?", "are eggs served at North today?", "vegan at South?"]
+EXAMPLES = ["gluten-free", "is there vegetarian at West or Seibel?", "are eggs served at North today?", "vegan at South?", "west"]
 dining_data_file = "./data/diningData-2018-09-15T19-54-14Z.csv" # TODO: generate based on date
 EATERIES = ["west", "north", "south", "seibel", "sid", "baker", "sammy's"]
 CONFIDENCE_THRESH = .7
@@ -114,7 +114,11 @@ def single_servery_food_exclude(food, servery, dining_data):
 
 # Chooses a message to send to the user
 def get_response_text(message):
-    message_text = message['text']
+    message_text = ""
+    if 'text' in message:
+        message_text = message['text']
+    else:
+        return help_statement()
 
     response_message = ""
 
@@ -203,8 +207,10 @@ def get_response_text(message):
                         serveries.append(servery)
 
         if ('mealtype' in nlp_entities):
+            """
             response_message += "I am " + str(round(nlp_entities['mealtype'][0]['confidence'] * 100)) + \
                                 "% confident you are talking about meals\n"
+            """
 
             entity = nlp_entities['mealtype']
             for m in entity:
@@ -254,11 +260,16 @@ def get_response_text(message):
             # If no specific servery has been specified, look in them all
             if not serveries:
                 for diet in diets:
-                    found_serveries = []
+                    found_serveries_all = []
                     if inclusion:
-                        found_serveries = servery_food_find(diet, dining_data)
+                        found_serveries_all = servery_food_find(diet, dining_data)
                     else:
-                        found_serveries = servery_food_exclude(diet, dining_data)
+                        found_serveries_all = servery_food_exclude(diet, dining_data)
+
+                    found_serveries = []
+                    for serv in found_serveries_all:
+                        if is_open(serv, dining_data):
+                            found_serveries.append(serv)
 
                     for serv in range(len(found_serveries)):
                         response_message += found_serveries[serv].capitalize()
