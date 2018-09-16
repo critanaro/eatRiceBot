@@ -7,6 +7,7 @@ import sys
 import os 
 import json
 import csv
+import subprocess
 from spell_checker import correct_sentence
 
 from wit import Wit
@@ -21,7 +22,7 @@ bot = Bot(ACCESS_TOKEN) ## Create an instance of the bot
 
 HELP_MESSAGE = "I can provide information about dining options, allergies, and schedules here at Rice!"
 EXAMPLES = ["gluten-free", "is there vegetarian at West or Seibel?", "are eggs served at North today?", "vegan at South?", "west"]
-dining_data_file = "./data/diningData-2018-09-15T19-54-14Z.csv" # TODO: generate based on date
+
 EATERIES = ["west", "north", "south", "seibel", "sid", "baker", "sammy's"]
 CONFIDENCE_THRESH = .7
 
@@ -34,7 +35,13 @@ def verify_fb_token(token_sent):
         return request.args.get("hub.challenge")
     return 'Invalid verification token'
 
-def dining_reader(dining_data_file):
+def dining_reader():
+    # If there is no file in the data folder with todays date, call ruby.
+    # Else, use the file in the data folder.
+
+
+    dining_data_file = "./data/diningData-2018-09-15T19-54-14Z.csv" # TODO: comment out after above code is completed
+
     dining_data = []
     with open(dining_data_file) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -134,7 +141,7 @@ def get_response_text(message):
 
         nlp_entities = nlp_response['entities']
 
-        dining_data = dining_reader(dining_data_file)
+        dining_data = dining_reader()
 
         eating = False
         schedule = []
