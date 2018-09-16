@@ -8,9 +8,12 @@ import os
 import json
 import csv
 import subprocess
+import datetime
+import time
 from spell_checker import correct_sentence
 
 from wit import Wit
+dir_path = os.path.dirname(os.path.realpath(__file__))
 access_token = "GGDBZAV5X6J5CJBCKOOLWWWMMMMSHTHR"
 wit_client = Wit(access_token)
 
@@ -35,12 +38,19 @@ def verify_fb_token(token_sent):
         return request.args.get("hub.challenge")
     return 'Invalid verification token'
 
+def time_stamp_gen():
+    ts = time.time()
+    st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+    return st;
+
 def dining_reader():
+    filename = "diningData-" + time_stamp_gen() + ".csv"
+    dining_data_file = "./data/" + filename
+    print ("file name: ", dining_data_file)
     # If there is no file in the data folder with todays date, call ruby.
     # Else, use the file in the data folder.
-
-
-    dining_data_file = "./data/diningData-2018-09-15T19-54-14Z.csv" # TODO: comment out after above code is completed
+    if (not os.path.isfile(dining_data_file)):
+        subprocess.check_output(['python3', dir_path+'/severyAPI/getMenu.py', filename])
 
     dining_data = []
     with open(dining_data_file) as csv_file:
@@ -353,20 +363,7 @@ def get_response_text(message):
                     else:
                         response_message += servery.capitalize() + " is closed today.\n \n"
 
-        """
-        # Inquire about the closed or open status at various times of day or dates
-        elif (schedule or time_input or mealtype_input):
-            checking_serveries = []
-            if not serveries:
-                checking_serveries = EATERIES[:]
-            else:
-                checking_serveries = serveries[:]
-            
-            for servery in checking_serveries:
-                # Code here
-        """
-
-        # Print the menus of serveries for today
+       
         elif (serveries_mentioned):
             if serveries:
                 for servery in serveries:
