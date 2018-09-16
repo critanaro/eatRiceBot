@@ -11,7 +11,6 @@ import subprocess
 import datetime
 import time
 from spell_checker import correct_sentence
-import severyTime
 
 from wit import Wit
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -29,7 +28,7 @@ EXAMPLES = ["gluten-free", "is there vegetarian at West or Seibel?", "are eggs s
 
 EATERIES = ["west", "north", "south", "seibel", "sid", "baker", "sammy's"]
 CONFIDENCE_THRESH = .7
-MEALTIMES = {"breakfast" : }
+#MEALTIMES = {"breakfast" : }
 
 def help_statement():
     return HELP_MESSAGE + " Ask me a question like \"" + random.choice(EXAMPLES) + "\""
@@ -365,31 +364,7 @@ def get_response_text(message):
                     else:
                         response_message += servery.capitalize() + " is closed today.\n \n"
 
-        # Inquire about the closed or open status at various times of day or dates
-        elif (schedule or time_input or mealtype_input):
-            checking_serveries = []
-            if not serveries:
-                checking_serveries = EATERIES[:]
-            else:
-                checking_serveries = serveries[:]
-            
-            for servery in checking_serveries:
-            	open_times = []
-                for time in time_input:
-                	if severyTime.CheckOneServery(time, servery):
-                		open_times.append(TimeToString(time))
 
-                if open_times:
-                	response_message += servery.capitalize() + " is open on "
-                	for t in range(len(open_times)):
-                        response_message += open_times[t]
-                        if t < len(open_times) - 2:
-                            response_message += ", "
-                        elif t == len(open_times) - 2:
-                            response_message += " and "
-
-        # Print the menus of serveries for today
-       
         elif (serveries_mentioned):
             if serveries:
                 for servery in serveries:
