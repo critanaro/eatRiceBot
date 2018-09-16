@@ -1,5 +1,4 @@
 #Python libraries that we need to import for our bot
-from __future__ import print_function
 from flask import Flask, request
 from pymessenger.bot import Bot
 import random
@@ -144,9 +143,6 @@ def get_response_text(message):
     message_text_correct = correct_sentence(message_text)
 
     nlp_response = wit_client.message(message_text_correct)
-
-    with open('nlp_response_wit.txt', 'w') as file:
-        file.write(json.dumps(nlp_response))
 
     if ('entities' in nlp_response):
 
@@ -392,29 +388,6 @@ def get_response_text(message):
         response_message = "I don't understand that statement. " + help_statement()
 
     return response_message
-    """
-    entity1 = firstEntity(message['nlp'])
-    if (entity1 and 'greeting' in entity1):
-        return "Hi! This is identified as a greeting by built in NLP"
-    elif (entity1 and 'sentiment' in entity1):
-        return "This is a sentiment, as defined by NLP"
-    else:
-        return "Hack on!"
-    """
-
-"""
-with open('employee_birthday.txt') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    line_count = 0
-    for row in csv_reader:
-        if line_count == 0:
-            print(f'Column names are {", ".join(row)}')
-            line_count += 1
-        else:
-            print(f'\t{row[0]} works in the {row[1]} department, and was born in {row[2]}.')
-            line_count += 1
-    print(f'Processed {line_count} lines.')
-"""
 
 # Checks whether the first entitiy is 'name' or not
 def firstEntity(nlp):
@@ -439,8 +412,6 @@ def receive_message():
     ## Handle POST requests
     else: 
         output = request.get_json() ## get whatever message a user sent the bot
-        with open('json_in_message.txt', 'w') as outfile:
-            json.dump(output, outfile)
 
         for event in output['entry']:
             messaging = event['messaging']
