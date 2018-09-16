@@ -11,12 +11,27 @@ dayToNum = {
 
 }
 
+dayToDay = {
+	"U" : "sunday",
+	"M" : "monday",
+	"T" : "tuesday",
+	"W" : "wednesday",
+	"R" : "thursday",
+	"F" : "friday",
+	"S" : "saturday"
+}
+
 mealToNum = {
 	"breakfast" : 0,
 	"brunch" : 1,
 	"lunch" : 2,
 	"dinner" : 3
 }
+
+
+def timeToDay (time):
+	#input: a string, 2018-09-15T00:00:00.000-05:00, output: a string day
+	return dayToDay[time[10:11]];
 
 def timeFormat (time):
 	#input: a string, 2018-09-15T00:00:00.000-05:00, output: (miliseconds after 00:00:00.000, dayNumber)
