@@ -346,7 +346,20 @@ def get_response_text(message):
                     else:
                         response_message += servery.capitalize() + " is closed today.\n \n"
 
-        # Print the menus
+        """
+        # Inquire about the closed or open status at various times of day or dates
+        elif (schedule or time_input or mealtype_input):
+            checking_serveries = []
+            if not serveries:
+                checking_serveries = EATERIES[:]
+            else:
+                checking_serveries = serveries[:]
+            
+            for servery in checking_serveries:
+                # Code here
+        """
+
+        # Print the menus of serveries for today
         elif (serveries_mentioned):
             if serveries:
                 for servery in serveries:
