@@ -7,6 +7,7 @@ import sys
 import os 
 import json
 import csv
+from spell_checker import correct_sentence
 
 from wit import Wit
 access_token = "GGDBZAV5X6J5CJBCKOOLWWWMMMMSHTHR"
@@ -122,7 +123,9 @@ def get_response_text(message):
 
     response_message = ""
 
-    nlp_response = wit_client.message(message_text)
+    message_text_correct = correct_sentence(message_text)
+
+    nlp_response = wit_client.message(message_text_correct)
 
     with open('nlp_response_wit.txt', 'w') as file:
         file.write(json.dumps(nlp_response))
@@ -278,17 +281,27 @@ def get_response_text(message):
                         elif serv == len(found_serveries) - 2:
                             response_message += " and "
 
-                    if len(found_serveries) > 1:
-                        response_message += " have "
+                    if len(found_serveries) > 0:
+                        if len(found_serveries) > 1:
+                            response_message += " have "
+                        else:
+                            response_message += " has "
+
+                        response_message += diet
+
+                        if not inclusion:
+                            response_message += " free"
+
+                        response_message += " options today.\n \n"
+
+                    # No food found
                     else:
-                        response_message += " has "
+                        response_message += "There are no " + diet
 
-                    response_message += diet
+                        if not inclusion:
+                            response_message += " free"
 
-                    if not inclusion:
-                        response_message += " free"
-
-                    response_message += " options today.\n \n"
+                        response_message += " options today.\n \n"
 
             # If serveries have been specified
             else:
