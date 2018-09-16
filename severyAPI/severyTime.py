@@ -67,7 +67,7 @@ def filterByDay (time):
 
 
 def filterByTime (time):
-	#input a time string, return list of servery open during these day
+	#input a time string, return list of servery open during this time
 	current_time = timeFormat(time)[0]
 	current_day = timeFormat(time)[1]
 
