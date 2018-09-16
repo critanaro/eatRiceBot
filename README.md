@@ -1,11 +1,27 @@
 # Eat Rice Bot
 
-This Facebook Messenger bot provides information about dining here at Rice!
 
-Some sample questions include:
-* What rice dishes can I eat around McMurtry?
-* Where can I eat chicken?
-* Colleges serving stuff without eggs?
-* Vegatarian?
-* gluten-free options at South or Sid?
-* What's on the menu at North and West?
+
+Provides a interactive, smart Chatbot that give food and dining advice at Rice, with an NLP framework that you can interact with it easily.
+
+" I can provide information about dining options, allergies, and schedules here at Rice! 
+
+Ask me a question like "west", 
+
+"Where can I find pizza?", 
+
+"Find vegan food." 
+
+"egg free, west"
+
+"Fried rice similar to that in panda express!"
+
+"
+
+## Working Demo
+
+```
+https://www.facebook.com/TXBOTT/
+```
+
+## 
