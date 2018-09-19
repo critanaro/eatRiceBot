@@ -1,5 +1,5 @@
 $LOAD_PATH.unshift('.')
-require './severyAPI/rice-dining-master/lib/rice/dining'
+require './severyAPI/rice-dining-master/lib/rice/dining' # problems
 require 'csv'
 require 'time'
 
