@@ -3,7 +3,7 @@ require 'uri'
 require 'net/http'
 require 'nokogiri'
 
-require 'rice/dining/version'
+require_relative 'rice/dining/version'
 
 module Rice
   module Dining

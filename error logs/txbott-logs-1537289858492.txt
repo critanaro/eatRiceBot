@@ -1,0 +1,54 @@
+
+# Can't access the dining file
+
+2018-09-18T16:57:09.665527+00:00 app[web.1]: /app/vendor/ruby-2.4.4/lib/ruby/2.4.0/rubygems/core_ext/kernel_require.rb:55:in `require': cannot load such file -- rice/dining/version (LoadError)
+2018-09-18T16:57:09.665570+00:00 app[web.1]: 	from /app/vendor/ruby-2.4.4/lib/ruby/2.4.0/rubygems/core_ext/kernel_require.rb:55:in `require'
+2018-09-18T16:57:09.665595+00:00 app[web.1]: 	from /app/severyAPI/rice-dining-master/lib/rice/dining.rb:6:in `<top (required)>'
+2018-09-18T16:57:09.665619+00:00 app[web.1]: 	from /app/vendor/ruby-2.4.4/lib/ruby/2.4.0/rubygems/core_ext/kernel_require.rb:55:in `require'
+2018-09-18T16:57:09.665644+00:00 app[web.1]: 	from /app/vendor/ruby-2.4.4/lib/ruby/2.4.0/rubygems/core_ext/kernel_require.rb:55:in `require'
+2018-09-18T16:57:09.665669+00:00 app[web.1]: 	from /app/severyAPI/getDining.rb:2:in `<main>'
+
+- install this
+
+
+# Can't find the generated CSV
+
+
+2018-09-18T16:57:09.668555+00:00 app[web.1]: Traceback (most recent call last):
+2018-09-18T16:57:09.668604+00:00 app[web.1]:   File "/app/severyAPI/getMenu.py", line 9, in <module>
+2018-09-18T16:57:09.668918+00:00 app[web.1]:     subprocess.check_output(['ruby', dir_path+'/getDining.rb', filename])
+2018-09-18T16:57:09.668954+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/subprocess.py", line 336, in check_output
+2018-09-18T16:57:09.669349+00:00 app[web.1]:     **kwargs).stdout
+2018-09-18T16:57:09.669385+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/subprocess.py", line 418, in run
+2018-09-18T16:57:09.669824+00:00 app[web.1]:     output=stdout, stderr=stderr)
+2018-09-18T16:57:09.669899+00:00 app[web.1]: subprocess.CalledProcessError: Command '['ruby', '/app/severyAPI/getDining.rb', 'diningData-2018-09-18.csv']' returned non-zero exit status 1.
+2018-09-18T16:57:09.684125+00:00 app[web.1]: [2018-09-18 16:57:09,680] ERROR in app: Exception on / [POST]
+
+
+# Can't use the CSV
+
+
+2018-09-18T16:57:09.684129+00:00 app[web.1]: Traceback (most recent call last):
+2018-09-18T16:57:09.684131+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/site-packages/flask/app.py", line 1982, in wsgi_app
+2018-09-18T16:57:09.684132+00:00 app[web.1]:     response = self.full_dispatch_request()
+2018-09-18T16:57:09.684134+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/site-packages/flask/app.py", line 1614, in full_dispatch_request
+2018-09-18T16:57:09.684136+00:00 app[web.1]:     rv = self.handle_user_exception(e)
+2018-09-18T16:57:09.684137+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/site-packages/flask/app.py", line 1517, in handle_user_exception
+2018-09-18T16:57:09.684139+00:00 app[web.1]:     reraise(exc_type, exc_value, tb)
+2018-09-18T16:57:09.684140+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/site-packages/flask/_compat.py", line 33, in reraise
+2018-09-18T16:57:09.684142+00:00 app[web.1]:     raise value
+2018-09-18T16:57:09.684144+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/site-packages/flask/app.py", line 1612, in full_dispatch_request
+2018-09-18T16:57:09.684146+00:00 app[web.1]:     rv = self.dispatch_request()
+2018-09-18T16:57:09.684147+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/site-packages/flask/app.py", line 1598, in dispatch_request
+2018-09-18T16:57:09.684149+00:00 app[web.1]:     return self.view_functions[rule.endpoint](**req.view_args)
+2018-09-18T16:57:09.684150+00:00 app[web.1]:   File "/app/app.py", line 422, in receive_message
+2018-09-18T16:57:09.684151+00:00 app[web.1]:     response_text = get_response_text(message['message'])
+2018-09-18T16:57:09.684153+00:00 app[web.1]:   File "/app/app.py", line 151, in get_response_text
+2018-09-18T16:57:09.684155+00:00 app[web.1]:     dining_data = dining_reader()
+2018-09-18T16:57:09.684156+00:00 app[web.1]:   File "/app/app.py", line 53, in dining_reader
+2018-09-18T16:57:09.684158+00:00 app[web.1]:     subprocess.check_output(['python3', dir_path+'/severyAPI/getMenu.py', filename])
+2018-09-18T16:57:09.684159+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/subprocess.py", line 336, in check_output
+2018-09-18T16:57:09.684161+00:00 app[web.1]:     **kwargs).stdout
+2018-09-18T16:57:09.684163+00:00 app[web.1]:   File "/app/.heroku/python/lib/python3.6/subprocess.py", line 418, in run
+2018-09-18T16:57:09.684164+00:00 app[web.1]:     output=stdout, stderr=stderr)
+2018-09-18T16:57:09.684245+00:00 app[web.1]: subprocess.CalledProcessError: Command '['python3', '/app/severyAPI/getMenu.py', 'diningData-2018-09-18.csv']' returned non-zero exit status 1.
